@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resultados de la búsqueda de vuelos</title>
+</head>
+<body>
+  <?php
+    // Conectar a la base de datos
+    $host = "localhost";
+    $username = "database_user";
+    $password = "database_password";
+    $dbname = "flight_database";
+    $conn = mysqli_connect($host, $username, $password, $dbname);
+    
+    // Verificar la conexión a la base de datos
+    if (!$conn) {
+      die("Error de conexión a la base de datos: " . mysqli_connect_error());
+    }
+    
+    // Recibir información del formulario
+    $origin = $_POST['origin'];
+    $destination = $_POST['destination'];
+    $date = $_POST['date'];
+    
+    // Realizar una consulta a la base de datos para obtener vuelos disponibles
+    $sql = "SELECT * FROM flights WHERE origin='$origin' AND destination='$destination' AND date='$date'";
+    $result = mysqli_query($conn, $sql);
+    
+    // Verificar si hay resultados disponibles
+    if (mysqli_num_rows($result) > 0) {
+      echo "<h1>Resultados de la búsqueda</h1>";
+      echo "<table>";
+      echo "<tr>";
+      echo "<th>Número de vuelo</th>";
+      echo "<th>Origen</th>";
+      echo "<th>Destino</th>";
+      echo "<th>Fecha</th>";
+      echo "<th>Hora</th>";
+      echo "<th>Precio</th>";
+      echo "</tr>";
+      
+      // Procesar los resultados
+      while ($row = mysqli_fetch_assoc($result)) {
+        $flight_number = $row['flight_number'];
+        $origin = $row['origin'];
+        $destination = $row['destination'];
+        $date = $row['date'];
+        $time = $row['time'];
+        $price = $row['price'];
+        
+        // Mostrar la información del vuelo en una tabla
+        echo "<tr>";
+        echo "<td>$flight_number</td>";
+        echo "<td>$origin</td>";
+        echo "<td>$destination</td>";
+        echo "<td>$date</td>";
+        echo "<td>$time</td>";
+        echo "<td>$price</td>";
+        echo "</tr>";
+      }
+      
+      echo "</table>";
+    } else {
+      // No se encontraron vuelos disponibles
+      echo "<h1>Resultados de la búsqueda</h
