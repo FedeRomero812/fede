@@ -1,0 +1,44 @@
+<?php
+  // Recibir la información de la reserva
+  $name = $_POST['name'];
+  $email = $_POST['email'];
+  $num_passengers = $_POST['num_passengers'];
+  $flight_id = $_POST['flight_id'];
+  
+  // Conectar a la base de datos
+  $host = "localhost";
+  $username = "database_user";
+  $password = "database_password";
+  $dbname = "flight_database";
+  $conn = mysqli_connect($host, $username, $password, $dbname);
+  
+  // Verificar la conexión a la base de datos
+  if (!$conn) {
+    die("Error de conexión a la base de datos: " . mysqli_connect_error());
+  }
+  
+  // Realizar una consulta a la base de datos para obtener información sobre el vuelo seleccionado
+  $sql = "SELECT * FROM flights WHERE id='$flight_id'";
+  $result = mysqli_query($conn, $sql);
+  
+  // Verificar si hay resultados disponibles
+  if (mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    
+    // Almacenar la información de la reserva en la base de datos
+    $sql = "INSERT INTO reservations (flight_id, name, email, num_passengers)
+    VALUES ('$flight_id', '$name', '$email', '$num_passengers')";
+    
+    if (mysqli_query($conn, $sql)) {
+      // Enviar el correo electrónico de confirmación
+      $to = $email;
+      $subject = "Confirmación de reserva de vuelo";
+      $message = "Gracias por reservar un vuelo con nosotros, " . $name . ".\n\n";
+      $message .= "Información sobre su reserva:\n";
+      $message .= "Vuelo: " . $row['flight_number'] . "\n";
+      $message .= "Origen: " . $row['origin'] . "\n";
+      $message .= "Destino: " . $row['destination'] . "\n";
+      $message .= "Fecha: " . $row['date'] . "\n";
+      $message .= "Hora: " . $row['time'] . "\n";
+      $message .= "Número de pasajeros: " . $num_passengers . "\n\n";
+      $message .= "Por favor, manténgase atento a futuros correos electrónicos
