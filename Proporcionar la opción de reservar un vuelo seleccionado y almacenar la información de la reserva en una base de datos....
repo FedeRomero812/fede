@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Resultados de la búsqueda de vuelos</title>
+</head>
+<body>
+  <?php
+    // Conectar a la base de datos
+    $host = "localhost";
+    $username = "database_user";
+    $password = "database_password";
+    $dbname = "flight_database";
+    $conn = mysqli_connect($host, $username, $password, $dbname);
+    
+    // Verificar la conexión a la base de datos
+    if (!$conn) {
+      die("Error de conexión a la base de datos: " . mysqli_connect_error());
+    }
+    
+    // Recibir información del formulario
+    $origin = $_POST['origin'];
+    $destination = $_POST['destination'];
+    $date = $_POST['date'];
+    
+    // Realizar una consulta a la base de datos para obtener vuelos disponibles
+    $sql = "SELECT * FROM flights WHERE origin='$origin' AND destination='$destination' AND date='$date'";
+    $result = mysqli_query($conn, $sql);
+    
+    // Verificar si hay resultados disponibles
+    if (mysqli_num_rows($result) > 0) { // Mostrar los resultados de la búsqueda en una tabla HTML echo "<table>"; echo "<tr><th>No. de vuelo</th><th>Origen</th><th>Destino</th><th>Fecha</th><th>Hora</th><th>Acción</th></tr>"; while ($row = mysqli_fetch_assoc($result)) { echo "<tr>"; echo "<td>" . $row['flight_number'] . "</td>"; echo "<td>" . $row['origin'] . "</td>"; echo "<td>" . $row['destination'] . "</td>"; echo "<td>" . $row['date'] . "</td>"; echo "<td>" . $row['time'] . "</td>"; echo "<td><a href='reserve_flight.php?id=" . $row['id'] . "'>Reservar</a></td>"; echo "</tr>"; } echo "</table>"; } else { echo "No se encontraron vuelos disponibles con los criterios especificados."; }
+// Cerrar la conexión a la base de datos
+mysqli_close($conn);
+?>
+</body> 
+</html>
